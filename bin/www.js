@@ -1,4 +1,5 @@
 var app = require('../app')
+var debug = require('debug')
 var http = require('http')
 
 var port = normalizePort(process.env.PORT || '3000')
@@ -6,6 +7,9 @@ app.set('port', port)
 
 var server = http.createServer(app)
 
+server.listen(port)
+server.on('error', onError)
+server.on('listening', onListening)
 
 /**
  * Normalize a port into a number, string, or false.
@@ -63,5 +67,6 @@ function onListening() {
     var bind = typeof addr === 'string'
         ? 'pipe ' + addr
         : 'port ' + addr.port
+    console.log('Server is running on http://localhost:' + port)
     debug('Listening on ' + bind)
 }
