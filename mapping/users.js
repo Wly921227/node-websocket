@@ -3,6 +3,7 @@ var users = {
     update: 'UPDATE users_table SET u_name=?, u_pd=?, u_nickname=? WHERE u_id=?',
     delete: 'DELETE FROM users_table WHERE u_id=?',
     getUserById: 'SELECT * from users_table WHERE u_id=?',
+    getUserByName: 'SELECT * from users_table WHERE u_name=?',
     getAllUsers: 'SELECT * from users_table'
 }
 
