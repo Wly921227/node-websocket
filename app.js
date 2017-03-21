@@ -30,10 +30,12 @@ app.use(cookieParser())
 app.use(function (req, res, next) {
     var url = req.url
     var user = req.session.user
-    if (user || url === '/api/test/getUser') {
+    if (url.indexOf(baseUri + '/auth') !== -1) {
+        next()
+    } else if (user) {
         next()
     } else {
-        res.redirect('/api/test/getUser')
+        // TODO return to login page
     }
 })
 
@@ -45,6 +47,8 @@ app.all(baseUri, function (req, res, next) {
 // routers
 var test = require('./routers/test')
 app.use(baseUri + '/test', test)
+var auth = require('./routers/auth')
+app.use(baseUri + '/auth', auth)
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -64,7 +68,7 @@ app.use(function(err, req, res, next) {
 
     // render the error page
     res.status(err.status || 500)
-    res.render('error')
+    // res.render('error')
 })
 
 module.exports = app
