@@ -1,8 +1,10 @@
 var express = require('express')
 var path  =require('path')
+
 var favicon = require('serve-favicon')
 var logger = require('morgan')
 var cookieParser = require('cookie-parser')
+var session = require('express-session')
 
 var baseUri = '/api'
 var app = express()
@@ -11,16 +13,34 @@ var app = express()
 app.use(favicon(path.join(__dirname, 'public', 'favicon.png')))
 app.use(logger('dev'))
 
-// cookie
-app.use(cookieParser())
-
 // static resources
 app.use(express.static(path.join(__dirname, 'public')))
 
+// session
+app.use(session({
+    resave: false, // don't save session if unmodified
+    saveUninitialized: false, // don't create session until something stored
+    secret: 'very secret'
+}))
+
+// cookie
+app.use(cookieParser())
+
+// handle users
+app.use(function (req, res, next) {
+    var url = req.url
+    var user = req.session.user
+    if (user || url === '/api/test/getUser') {
+        next()
+    } else {
+        res.redirect('/api/test/getUser')
+    }
+})
+
 // routers handle
 app.all(baseUri, function (req, res, next) {
+    // TODO can't handle exist routers
     console.log('------- Routers Handle All -------')
-    next()
 })
 // routers
 var test = require('./routers/test')
