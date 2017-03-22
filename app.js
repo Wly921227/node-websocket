@@ -1,9 +1,10 @@
 var express = require('express')
-var path  =require('path')
+var path = require('path')
 
 var favicon = require('serve-favicon')
 var logger = require('morgan')
 var cookieParser = require('cookie-parser')
+var bodyParser = require('body-parser')
 var session = require('express-session')
 
 var baseUri = '/api'
@@ -15,6 +16,12 @@ app.use(logger('dev'))
 
 // static resources
 app.use(express.static(path.join(__dirname, 'public')))
+
+// request json data 解析
+app.use(bodyParser.json({limit: '2mb'}))   //body-parser 解析json格式数据
+app.use(bodyParser.urlencoded({            //此项必须在 bodyParser.json 下面,为参数编码
+    extended: true
+}))
 
 // session
 app.use(session({
@@ -36,6 +43,7 @@ app.use(function (req, res, next) {
         next()
     } else {
         // TODO return to login page
+        next()
     }
 })
 
@@ -51,7 +59,7 @@ var auth = require('./routers/auth')
 app.use(baseUri + '/auth', auth)
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
     var err = new Error('Not Found')
     err.status = 404
     res.send({
@@ -61,14 +69,14 @@ app.use(function(req, res, next) {
 })
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
     // set locals, only providing error in development
     res.locals.message = err.message
     res.locals.error = req.app.get('env') === 'development' ? err : {}
 
     // render the error page
     res.status(err.status || 500)
-    // res.render('error')
+    res.render('error')
 })
 
 module.exports = app
