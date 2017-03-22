@@ -13,15 +13,12 @@ module.exports = {
                 if (typeof F === 'function') {
                     F(err, result)
                 }
-                connection.release()
+                // connection.release()
                 if (err) {
-                    if (typeof F === 'function') {
-                        F(err)
-                    }
                     throw err
                 }
             }
-            connection.query(args[0], func)
+            connection.query.apply(connection, args.concat(func))
         })
     }
 }

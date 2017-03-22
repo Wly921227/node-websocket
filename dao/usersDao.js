@@ -13,8 +13,8 @@ module.exports = {
         })
     },
     userLogin: function (req, res) {
-        var u_name = req.params.uname
-        var u_pd = req.params.upassword
+        var u_name = req.body.uname
+        var u_pd = req.body.upassword
         if (!u_name) {
             res.json(RT.error('请输入用户名'))
         }
@@ -24,14 +24,15 @@ module.exports = {
         db.query(sql.getUserByName, [u_name],function (err, result) {
             console.log('userLogin result is: ', result)
             if (result) {
-                if (result.u_pd === u_pd) {
+                var user = result[0]
+                if (user.u_pd === u_pd) {
                     req.session.user = {
-                        uId: result.u_id,
-                        uName: result.u_name,
-                        uNickName: result.u_nickname
+                        uId: user.u_id,
+                        uName: user.u_name,
+                        uNickName: user.u_nickname
                     }
                     // TODO return to index page
-                    res.send(result)
+                    res.send(user)
                 } else {
                     res.json(RT.error('用户名不存在或密码错误'))
                 }
