@@ -34,16 +34,17 @@ app.use(session({
 app.use(cookieParser())
 
 // handle users
+var RT = require('./utils/result')
 app.use(function (req, res, next) {
     var url = req.url
     var user = req.session.user
-    if (url.indexOf(baseUri + '/auth') !== -1) {
+    if (url.indexOf(baseUri + '/auth/login') !== -1) {
         next()
     } else if (user) {
         next()
     } else {
         // TODO return to login page
-        next()
+        res.json(RT.error('unLogin'))
     }
 })
 
@@ -53,8 +54,8 @@ app.all(baseUri, function (req, res, next) {
     console.log('------- Routers Handle All -------')
 })
 // routers
-var test = require('./routers/test')
-app.use(baseUri + '/test', test)
+// var test = require('./routers/test')
+// app.use(baseUri + '/test', test)
 var auth = require('./routers/auth')
 app.use(baseUri + '/auth', auth)
 
@@ -62,21 +63,20 @@ app.use(baseUri + '/auth', auth)
 app.use(function (req, res, next) {
     var err = new Error('Not Found')
     err.status = 404
-    res.send({
-        error: 404
-    })
+    res.json(RT.error('404'))
     next(err)
 })
 
 // error handler
 app.use(function (err, req, res, next) {
     // set locals, only providing error in development
+
     res.locals.message = err.message
     res.locals.error = req.app.get('env') === 'development' ? err : {}
 
     // render the error page
     res.status(err.status || 500)
-    res.render('error')
+    res.json(RT.error('404'))
 })
 
 module.exports = app

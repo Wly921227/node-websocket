@@ -25,19 +25,21 @@ module.exports = {
             console.log('userLogin result is: ', result)
             if (result) {
                 var user = result[0]
-                if (user.u_pd === u_pd) {
-                    req.session.user = {
+                if (user && user.u_pd === u_pd) {
+                    var userInfo = {
                         uId: user.u_id,
                         uName: user.u_name,
                         uNickName: user.u_nickname
                     }
-                    // TODO return to index page
-                    res.send(user)
+                    req.session.user = userInfo
+
+                    console.log('return result is: ', RT.success(userInfo))
+                    res.send(RT.success(userInfo))
                 } else {
-                    res.json(RT.error('用户名不存在或密码错误'))
+                    res.send(RT.error('用户名不存在或密码错误'))
                 }
             } else {
-                res.json(RT.error('用户名不存在或密码错误'))
+                res.send(RT.error('用户名不存在或密码错误'))
             }
         })
     }
